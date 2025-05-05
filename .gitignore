@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual Env
+backend/venv/
+
+# Node
+node_modules/
+
+# Editor and system junk
+.vscode/
+.DS_Store
+.env
