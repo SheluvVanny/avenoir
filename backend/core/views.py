@@ -62,3 +62,10 @@ def bookmark_list_create(request):
             serializer.save(user=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+@api_view(['DELETE'])
+@permission_classes([IsAuthenticated])
+def bookmark_delete(request, pk):
+    bookmark = get_object_or_404(Bookmark, pk=pk, user=request.user)
+    bookmark.delete()
+    return Response(status=status.HTTP_204_NO_CONTENT)
