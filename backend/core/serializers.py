@@ -7,7 +7,9 @@ class TagSerializer(serializers.ModelSerializer):
         fields = ['id', 'name']
 
 class EventSerializer(serializers.ModelSerializer):
-    tags = TagSerializer(many=True)  # nested tags
+    tags = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Tag.objects.all()
+    )
 
     class Meta:
         model = Event

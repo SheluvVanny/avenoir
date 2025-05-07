@@ -1,7 +1,7 @@
-from django.contrib import admin
-from django.urls import path, include
+from django.urls import path
+from .views import event_list_create
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/', include('core.urls')),  # ← This line tells Django to route API calls to core app
+    path('events/', event_list_create, name='event_list_create'),
 ]
+
