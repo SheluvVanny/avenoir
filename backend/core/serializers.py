@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from .models import Event, Tag
+from .models import Bookmark
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -14,3 +15,8 @@ class EventSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ['id', 'title', 'description', 'date', 'location', 'latitude', 'longitude', 'tags']
+        
+class BookmarkSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Bookmark
+        fields = ['id', 'event', 'created_at']

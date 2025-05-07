@@ -5,7 +5,9 @@ from rest_framework import status
 from .models import Event
 from .serializers import EventSerializer
 from django.shortcuts import get_object_or_404
-
+from .models import Bookmark
+from .serializers import BookmarkSerializer
+from rest_framework.permissions import IsAuthenticated
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -45,3 +47,18 @@ def event_detail(request, pk):
             return Response({'detail': 'Not authorized to delete this event'}, status=status.HTTP_403_FORBIDDEN)
         event.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
+def bookmark_list_create(request):
+    if request.method == 'GET':
+        bookmarks = Bookmark.objects.filter(user=request.user)
+        serializer = BookmarkSerializer(bookmarks, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = BookmarkSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save(user=request.user)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
