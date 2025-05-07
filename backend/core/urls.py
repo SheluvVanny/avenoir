@@ -5,7 +5,9 @@ from .views import (
     bookmark_list_create,
     bookmark_delete,
     bookmark_toggle,
+    tag_list,
 )
+
 
 
 urlpatterns = [
@@ -14,6 +16,7 @@ urlpatterns = [
     path('bookmarks/', bookmark_list_create, name='bookmark_list_create'),
     path('bookmarks/<int:pk>/', bookmark_delete, name='bookmark_delete'),
     path('bookmarks/toggle/', bookmark_toggle, name='bookmark_toggle'),
+    path('tags/', tag_list, name='tag_list'),
 
 ]
 

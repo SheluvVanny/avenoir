@@ -8,11 +8,10 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 
 # Local Models
-from .models import Event, Bookmark
+from .models import Event, Bookmark, Tag
 
 # Local Serializers
-from .serializers import EventSerializer, BookmarkSerializer
-
+from .serializers import EventSerializer, BookmarkSerializer, TagSerializer
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -23,7 +22,7 @@ def event_list_create(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        serializer = BookmarkSerializer(data=request.data, context={'request': request})
+        serializer = EventSerializer(data=request.data)
         if serializer.is_valid():
             event = serializer.save(created_by=request.user)
             return Response(EventSerializer(event).data, status=status.HTTP_201_CREATED)
@@ -90,3 +89,9 @@ def bookmark_toggle(request):
         return Response({"detail": "Bookmark removed."}, status=status.HTTP_200_OK)
     
     return Response({"detail": "Bookmark added."}, status=status.HTTP_201_CREATED)
+
+@api_view(['GET'])
+def tag_list(request):
+    tags = Tag.objects.all()
+    serializer = TagSerializer(tags, many=True)
+    return Response(serializer.data)
