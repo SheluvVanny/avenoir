@@ -1,13 +1,18 @@
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
-from rest_framework.response import Response
-from rest_framework import status
-from .models import Event
-from .serializers import EventSerializer
+# Django
 from django.shortcuts import get_object_or_404
-from .models import Bookmark
-from .serializers import BookmarkSerializer
-from rest_framework.permissions import IsAuthenticated
+
+# DRF Core
+from rest_framework import status
+from rest_framework.response import Response
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
+
+# Local Models
+from .models import Event, Bookmark
+
+# Local Serializers
+from .serializers import EventSerializer, BookmarkSerializer
+
 
 @api_view(['GET', 'POST'])
 @permission_classes([IsAuthenticatedOrReadOnly])
@@ -69,3 +74,19 @@ def bookmark_delete(request, pk):
     bookmark = get_object_or_404(Bookmark, pk=pk, user=request.user)
     bookmark.delete()
     return Response(status=status.HTTP_204_NO_CONTENT)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def bookmark_toggle(request):
+    event_id = request.data.get('event')
+    if not event_id:
+        return Response({"detail": "Missing event ID."}, status=status.HTTP_400_BAD_REQUEST)
+
+    event = get_object_or_404(Event, pk=event_id)
+    bookmark, created = Bookmark.objects.get_or_create(user=request.user, event=event)
+
+    if not created:
+        bookmark.delete()
+        return Response({"detail": "Bookmark removed."}, status=status.HTTP_200_OK)
+    
+    return Response({"detail": "Bookmark added."}, status=status.HTTP_201_CREATED)

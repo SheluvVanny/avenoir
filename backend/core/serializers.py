@@ -1,6 +1,6 @@
 from rest_framework import serializers
-from .models import Event, Tag
-from .models import Bookmark
+from .models import Event, Tag, Bookmark
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
