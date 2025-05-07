@@ -18,7 +18,7 @@ def event_list_create(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
-        serializer = EventSerializer(data=request.data)
+        serializer = BookmarkSerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             event = serializer.save(created_by=request.user)
             return Response(EventSerializer(event).data, status=status.HTTP_201_CREATED)
