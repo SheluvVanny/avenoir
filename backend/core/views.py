@@ -22,8 +22,26 @@ def event_list_create(request):
             return Response(EventSerializer(event).data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-@api_view(['GET'])
+@api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticatedOrReadOnly])
 def event_detail(request, pk):
     event = get_object_or_404(Event, pk=pk)
-    serializer = EventSerializer(event)
-    return Response(serializer.data)
+
+    if request.method == 'GET':
+        serializer = EventSerializer(event)
+        return Response(serializer.data)
+
+    elif request.method == 'PUT':
+        if event.created_by != request.user:
+            return Response({'detail': 'Not authorized to update this event'}, status=status.HTTP_403_FORBIDDEN)
+        serializer = EventSerializer(event, data=request.data)
+        if serializer.is_valid():
+            serializer.save(created_by=request.user)
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    elif request.method == 'DELETE':
+        if event.created_by != request.user:
+            return Response({'detail': 'Not authorized to delete this event'}, status=status.HTTP_403_FORBIDDEN)
+        event.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
